@@ -27,7 +27,7 @@ Run the steps in order (1 → 6); each step reads from the previous step's outpu
 
 ### Environment
 
-All scripts are run inside the `spl_mpra_map` conda environment defined in [`BulkRNAseq.yaml`](BulkRNAseq.yaml), which pins Python 3.12 plus the packages the pipeline depends on (`pandas`, `numpy`, `scikit-learn`, `scipy`, `statsmodels`, `pydeseq2`, `h5py`, `anndata`, plus bioinformatics tools like `samtools`, `star`, `bedtools`, `bcftools`, `cutadapt`, and Jupyter). Create and activate it with:
+All scripts are run inside the `spl_mpra_map` conda environment defined in [`BulkRNAseq.yaml`](BulkRNAseq.yaml), which pins Python 3.12 plus the packages the pipeline depends on (`pandas`, `numpy`, `scikit-learn`, `scipy`, `statsmodels` and Jupyter). Create and activate it with:
 
 ```bash
 conda env create -f BulkRNAseq.yaml
