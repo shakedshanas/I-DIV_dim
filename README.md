@@ -43,8 +43,10 @@ Downloads the raw input data the pipeline expects one directory above the workin
 - `GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz` — transcript-level read counts
 - `GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz` — gene-level TPM
 - `GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz` — gene-level read counts
-The four `GTEx_Analysis_*.gct.gz` files are the raw matrices `1.firstfilter.py` extracts from in step 1 (`--data 0-3`).
- 
+- `GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt` — sample attributes (tissue, batch, RIN, ischemic time, etc.)
+- `GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt` — subject phenotypes (sex, age, death type)
+The four `GTEx_Analysis_*.gct.gz` files are the raw matrices `1.firstfilter.py` extracts from in step 1 (`--data 0-3`); the two `Annotations_*DS.txt` files are the sample/subject metadata `1.firstfilter.py` reads to build `sample_metadata.csv.gz`.
+
 ### 1. Sample & gene filtering — `1.firstfilter.py`
 Run as a job array (`--array=0-3`), where the array index selects which raw matrix to extract:
 - `0`: gene read counts
