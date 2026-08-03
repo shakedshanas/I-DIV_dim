@@ -37,8 +37,14 @@ conda activate spl_mpra_map
 ## Step details
 
 ### 0. `commands.sh`
-Submits a single SLURM job to download the GENCODE v26 human annotation GFF3 file, used as the basis for gene filtering in step 1.
-
+Downloads the raw input data the pipeline expects one directory above the working directory:
+- `gencode.v26.annotation.gff3.gz` (via `sbatch`) — GENCODE v26 human gene annotation, used as the basis for gene filtering in step 1
+- `GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz` — transcript-level TPM
+- `GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz` — transcript-level read counts
+- `GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz` — gene-level TPM
+- `GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz` — gene-level read counts
+The four `GTEx_Analysis_*.gct.gz` files are the raw matrices `1.firstfilter.py` extracts from in step 1 (`--data 0-3`).
+ 
 ### 1. Sample & gene filtering — `1.firstfilter.py`
 Run as a job array (`--array=0-3`), where the array index selects which raw matrix to extract:
 - `0`: gene read counts
