@@ -22,7 +22,7 @@ Run the steps in order (1 → 6); each step reads from the previous step's outpu
 ## Requirements
 
 - Access to a SLURM cluster (`sbatch`) with a `hive1d` partition (or edit the `#SBATCH` headers to match your cluster)
-- Raw GTEx v8 files (gene reads, gene TPM, transcript reads, transcript TPM `.gct.gz` files) and the GTEx v8 sample/subject annotation files, expected one directory above the working directory
+- Raw GTEx v8 files (gene reads, gene TPM, transcript reads, transcript TPM `.gct.gz` files) and the GTEx v8 sample/subject annotation files
 - GENCODE v26 gene annotation (`gencode.v26.annotation.gff3.gz`, downloaded via `commands.sh`) and a derived `gene_names_to_id.26.csv.gz` mapping file
 
 ### Environment
