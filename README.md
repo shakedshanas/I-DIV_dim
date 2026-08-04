@@ -45,6 +45,7 @@ Downloads the raw input data the pipeline expects one directory above the workin
 - `GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz` — gene-level read counts
 - `GTEx_Analysis_v8_Annotations_SampleAttributesDS.txt` — sample attributes (tissue, batch, RIN, ischemic time, etc.)
 - `GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.txt` — subject phenotypes (sex, age, death type)
+
 The four `GTEx_Analysis_*.gct.gz` files are the raw matrices `1.firstfilter.py` extracts from in step 1 (`--data 0-3`); the two `Annotations_*DS.txt` files are the sample/subject metadata `1.firstfilter.py` reads to build `sample_metadata.csv.gz`.
 
 ### 1. Sample & gene filtering — `1.firstfilter.py`
@@ -54,18 +55,22 @@ Run as a job array (`--array=0-3`), where the array index selects which raw matr
 - `2`: transcript read counts
 - `3`: transcript TPM
 
-On first run it also builds and caches `sample_metadata.csv.gz` and `gene_metadata.csv.gz` (filtering samples by death type, RNA quality (RIN ≥ 6), and tissue group size, and filtering genes to protein-coding, non-sex, non-mitochondrial genes present in all four raw matrices).
+On first run it also builds and caches `sample_metadata.csv.gz` and `gene_metadata.csv.gz` (filtering samples by death type (1 and 2), RNA quality (RIN ≥ 6), and tissue group size, and filtering genes to protein-coding, non-sex, non-mitochondrial genes present in all four raw matrices).
+
+Outputs for this step are found at `outputdir.1/`.
 
 ### 2. Per-gene diversity calculation — `2.calculate_div.py`
-Run as a large job array (default `--array=0-10000`, doubled up via an offset trick to cover the full gene list in one array). For each gene index, loads only that gene's row from the transcript-level matrix and computes:
-- `div1`: isoform diversity (Shannon evenness-based index from `div.py`)
+Run as a large job array for each gene index, loads only that gene's row from the transcript-level matrix and computes:
+- `div1`: isoform diversity (from `div.py`)
 - `total_expression`: summed expression across isoforms
 - `nisoforms_expressed`: count of isoforms with non-zero expression
 
 Results are appended gene-by-gene into shared CSVs in `outputdir.2/`.
 
 ### 3. Gene filtering — `3.genefilter.py`
-Submitted once per dataframe that needs filtering (TPM, gene metadata, diversity, isoform count, total expression). Keeps only genes with non-zero diversity in more than 1% of samples, reducing the gene set for downstream, more expensive steps.
+Submitted once per dataframe that needs filtering (TPM, gene metadata, diversity, isoform count, total expression). Keeps only genes with non-zero diversity in more than 1% of samples, reducing the gene set for downstream, more expensive steps.  
+Outputs for this step are found at `outputdir.3/`.
+
 
 ### 4. Covariate correction — `4.correct_data.py`
 Run as a job array (`--array=0-1`, mapped to `lgtype` 1 or 2) that in turn launches further `sbatch` jobs covering:
@@ -75,11 +80,17 @@ Run as a job array (`--array=0-1`, mapped to `lgtype` 1 or 2) that in turn launc
 
 Uses `scikit-learn`'s `LinearRegression` per gene against a design matrix of batch, RIN, ischemic time, and (for `lgtype=1`) age/sex/death type. Outputs residual and predicted matrices.
 
+Outputs for this step are found at `outputdir.4/`.
+
 ### 5. Transcriptome-wide diversity — `5.calculate_transcriptome_div.py`
 Run as a job array (`--array=0-6`), where each index selects a gene grouping (all genes, ribosomal protein genes, housekeeping genes, combinations/exclusions thereof). For each grouping, computes per-sample summary statistics — number of genes expressed, mean isoform diversity, mean TPM — overall and restricted to the top 1/5/10 percent most highly expressed genes.
 
+Outputs for this step are found at `outputdir.5/`.
+
 ### 6. Quantile normalization — `6.quantile_norm.py`
 Quantile-normalizes each batch-corrected residual matrix produced in step 4 (sample-group + tissue-specific residuals for TPM and diversity), so that each sample's value distribution matches a common reference distribution.
+
+Outputs for this step are found at `outputdir.6/`.
 
 ## Directory structure produced
 
