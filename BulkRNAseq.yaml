@@ -1,4 +1,4 @@
-name: spl_mpra_map
+name: BulkRNAseq
 channels:
   - anaconda
   - conda-forge
