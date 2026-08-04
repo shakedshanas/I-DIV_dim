@@ -9,7 +9,6 @@ parser = argparse.ArgumentParser(description='filter genes')
 parser.add_argument('--data', type=int, choices=[0,1,2,3], help='types of data to choose')
 args = parser.parse_args()
 
-raw_data_path = '/'.join(os.getcwd().split('/')[:-1]) + '/'
 outputpath = os.getcwd() + '/outputdir.1/'
 if not os.path.exists( outputpath ):
     os.mkdir(outputpath  )
@@ -67,8 +66,8 @@ tissue_systems = {
 
 def create_metadata_smpl_genes():
     ''' Step 1 - load sample attributes: technical infromation about the samples '''
-    annot          = pd.read_csv(raw_data_path + 'GTEx_Analysis_v8_Annotations_SampleAttributesDS.csv', sep='\t') # explains the samples 
-    subject_annot  = pd.read_csv(raw_data_path + 'GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.csv', sep='\t') # explains the sex & age of the donors in each sample
+    annot          = pd.read_csv('GTEx_Analysis_v8_Annotations_SampleAttributesDS.csv', sep='\t') # explains the samples 
+    subject_annot  = pd.read_csv('GTEx_Analysis_v8_Annotations_SubjectPhenotypesDS.csv', sep='\t') # explains the sex & age of the donors in each sample
 
     subject_annot = subject_annot.join(subject_annot.SUBJID.str.split('-', expand=True)) # extract source and donor from subjectID
     # subject_annot.rename(columns={'SEX': 'sex', 'AGE': 'age', 'DTHHRDY': 'death'}, inplace=True)
@@ -136,10 +135,10 @@ def create_metadata_smpl_genes():
     ''' fit the GTEx columns and the metadata samples to each other'''
 
     gtex_columns = {}
-    gtex_columns['gene_reads'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, nrows=0, compression='gzip').drop(columns=['Name', 'Description']).columns
-    gtex_columns['gene_tpm'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, nrows=0, compression='gzip').drop(columns=['Name', 'Description']).columns
-    gtex_columns['transcript_reads'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', nrows=0, skiprows=2, compression='gzip').drop(columns=['transcript_id', 'gene_id']).columns
-    gtex_columns['transcript_tpm'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', nrows=0, skiprows=2, compression='gzip').drop(columns=['transcript_id', 'gene_id']).columns
+    gtex_columns['gene_reads'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, nrows=0, compression='gzip').drop(columns=['Name', 'Description']).columns
+    gtex_columns['gene_tpm'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, nrows=0, compression='gzip').drop(columns=['Name', 'Description']).columns
+    gtex_columns['transcript_reads'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', nrows=0, skiprows=2, compression='gzip').drop(columns=['transcript_id', 'gene_id']).columns
+    gtex_columns['transcript_tpm'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', nrows=0, skiprows=2, compression='gzip').drop(columns=['transcript_id', 'gene_id']).columns
     gtex_columns['metadta'] = metadata.index.to_list()
 
     common_columns = set.intersection(*map(set, gtex_columns.values()))
@@ -149,10 +148,10 @@ def create_metadata_smpl_genes():
     metadata['system'] = metadata.SMTSD.map(tissue_systems)
 
     gtex_index = {}
-    gtex_index['gene_reads'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, usecols=['Name']).Name.str.split('.', expand=True)[0].values
-    gtex_index['gene_tpm'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, usecols=['Name']).Name.str.split('.', expand=True)[0].values
-    gtex_index['transcript_reads'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, usecols=['gene_id']).gene_id.str.split('.', expand=True)[0].values
-    gtex_index['transcript_tpm'] = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=2, usecols=['gene_id']).gene_id.str.split('.', expand=True)[0].values
+    gtex_index['gene_reads'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, usecols=['Name']).Name.str.split('.', expand=True)[0].values
+    gtex_index['gene_tpm'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, usecols=['Name']).Name.str.split('.', expand=True)[0].values
+    gtex_index['transcript_reads'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, usecols=['gene_id']).gene_id.str.split('.', expand=True)[0].values
+    gtex_index['transcript_tpm'] = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=2, usecols=['gene_id']).gene_id.str.split('.', expand=True)[0].values
     gtex_index['metadta'] = gene_annotation.index.to_list()
    
     common_index = set.intersection(*map(set, gtex_index.values())) # create a single set from all the genes across the dictionary 
@@ -184,42 +183,42 @@ d = {0:'readcount_g',
      3: 'readtpm_t'}
 
 if args.data == 0:    
-    rows_pd = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, usecols= ['Name'], compression='gzip')
+    rows_pd = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=2, usecols= ['Name'], compression='gzip')
     rows_pd_skip = skip_rows(rows = rows_pd, columnname = 'Name')
     
-    gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
+    gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_reads.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
     gtex['accession_number'] = gtex.Name.str.split('.', expand=True)[0]
     # gtex = gtex[gtex.Name.isin(gene_annotation.index.to_list())]
     gtex.drop(columns='Name', inplace=True)
     gtex.set_index('accession_number', inplace=True)
     
 if args.data == 1:
-    rows_pd = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['Name'])
+    rows_pd = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['Name'])
     rows_pd_skip = skip_rows(rows = rows_pd, columnname = 'Name')
     
-    # gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
-    gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
+    # gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=2, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
+    gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_tpm.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['Name'] + metadata.index.to_list(), compression='gzip')
     gtex['accession_number'] = gtex.Name.str.split('.', expand=True)[0]
     # gtex = gtex[gtex.Name.isin(gene_annotation.index.to_list())]
     gtex.drop(columns='Name', inplace=True)
     gtex.set_index('accession_number', inplace=True)
 
 if args.data == 2:
-    rows_pd = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['gene_id'])
+    rows_pd = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['gene_id'])
     rows_pd_skip = skip_rows(rows = rows_pd, columnname = 'gene_id')
     
-    # gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, usecols= ['gene_id'] + metadata.index.to_list(), compression='gzip')
-    gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['gene_id'] + metadata.index.to_list(), compression='gzip')
+    # gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=2, usecols= ['gene_id'] + metadata.index.to_list(), compression='gzip')
+    gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_expected_count.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols= ['gene_id'] + metadata.index.to_list(), compression='gzip')
     gtex = gtex.join(gtex.gene_id.str.split('.', expand=True)[0]).rename(columns={0: 'accession_number'})
     # gtex = gtex[gtex.accession_number.isin(gene_annotation.index.to_list())]
     gtex.set_index('accession_number', inplace=True)
     gtex.drop(columns = 'gene_id', inplace=True)
 
 if args.data == 3:
-    rows_pd = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['gene_id'])
+    rows_pd = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=2, compression='gzip', usecols= ['gene_id'])
     rows_pd_skip = skip_rows(rows = rows_pd, columnname = 'gene_id')
     
-    gtex = pd.read_csv(raw_data_path + 'GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols=['gene_id'] + metadata.index.to_list())
+    gtex = pd.read_csv('GTEx_Analysis_2017-06-05_v8_RSEMv1.3.0_transcript_tpm.gct.gz', sep='\t', skiprows=rows_pd_skip, usecols=['gene_id'] + metadata.index.to_list())
     gtex = gtex.join(gtex.gene_id.str.split('.', expand=True)[0]).rename(columns={0: 'accession_number'})
     # gtex = gtex[gtex.accession_number.isin(gene_annotation.index.to_list())]
     gtex.set_index('accession_number', inplace=True)
