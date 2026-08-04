@@ -31,7 +31,7 @@ All scripts are run inside the `spl_mpra_map` conda environment defined in [`Bul
 
 ```bash
 conda env create -f BulkRNAseq.yaml
-conda activate spl_mpra_map
+conda activate BulkRNAseq
 ```
 
 ## Step details
