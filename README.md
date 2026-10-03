@@ -1,4 +1,4 @@
-# GTEx Isoform Diversity Pipeline (upstream folder)
+# GTEx Isoform Diversity Pipeline
 
 A SLURM-based Python pipeline for processing GTEx v8 gene/transcript expression data, computing per-gene isoform (splicing) diversity, correcting for technical covariates, and quantile-normalizing the results.
 
@@ -9,6 +9,7 @@ Each numbered step has a `.py` script and a matching `activate` `.sh` wrapper th
 | Step | Script | Activation script | Purpose | Output dir |
 |---|---|---|---|---|
 | — | `commands.sh` | — | Downloads the GENCODE v26 GFF3 gene annotation used for filtering | — |
+| — | `make_genemetadata.per_gencodev.py` | — | Builds the `gene_names_to_id.{gv}.csv.gz` gene metadata/annotation file (protein-coding genes, exon count, length, housekeeping/ribosomal-protein flags) that `1.firstfilter.py` and `5.calculate_transcriptome_div.py` depend on | — |
 | 1 | `1.firstfilter.py` | `1.activate_firstfilter.sh` | Builds sample & gene metadata; filters samples (death type, RIN, tissue group size) and genes (protein-coding, non-sex/mito chromosomes); extracts the four raw GTEx matrices | `outputdir.1/` |
 | 2 | `2.calculate_div.py` | `2.activate_calculate_div.sh` | Computes per-gene isoform diversity, total expression, and number of expressed isoforms, one gene at a time | `outputdir.2/` |
 | 3 | `3.genefilter.py` | `3.activate_genefilter.sh` | Filters all downstream tables down to genes with detectable isoform diversity in ≥1% of samples | `outputdir.3/` |
@@ -22,16 +23,17 @@ Run the steps in order (1 → 6); each step reads from the previous step's outpu
 ## Requirements
 
 - Access to a SLURM cluster (`sbatch`) with a `hive1d` partition (or edit the `#SBATCH` headers to match your cluster)
-- Raw GTEx v8 files (gene reads, gene TPM, transcript reads, transcript TPM `.gct.gz` files) and the GTEx v8 sample/subject annotation files
-- GENCODE v26 gene annotation (`gencode.v26.annotation.gff3.gz`, downloaded via `commands.sh`) and a derived `gene_names_to_id.26.csv.gz` mapping file
+- Raw GTEx v8 files (gene reads, gene TPM, transcript reads, transcript TPM `.gct.gz` files) and the GTEx v8 sample/subject annotation files, expected one directory above the working directory
+- GENCODE v26 gene annotation (`gencode.v26.annotation.gff3.gz`, downloaded via `commands.sh`) and a derived `gene_names_to_id.26.csv.gz` mapping file, built by `make_genemetadata.per_gencodev.py`
+- Additional inputs for `make_genemetadata.per_gencodev.py`: a `housekeeping_genes.txt` RefSeq ID list, internet/Biomart access (via `gseapy`), and (depending on `-gv`) the relevant GENCODE/Ensembl GFF3/GTF annotation file or an `.h5ad` single-cell dataset
 
 ### Environment
 
-All scripts are run inside the `spl_mpra_map` conda environment defined in [`BulkRNAseq.yaml`](BulkRNAseq.yaml), which pins Python 3.12 plus the packages the pipeline depends on (`pandas`, `numpy`, `scikit-learn`, `scipy`, `statsmodels` and Jupyter). Create and activate it with:
+All scripts are run inside the `spl_mpra_map` conda environment defined in [`BulkRNAseq.yaml`](BulkRNAseq.yaml), which pins Python 3.12 plus the packages the pipeline depends on (`pandas`, `numpy`, `scikit-learn`, `scipy`, `statsmodels`, `pydeseq2`, `h5py`, `anndata`, plus bioinformatics tools like `samtools`, `star`, `bedtools`, `bcftools`, `cutadapt`, and Jupyter). Create and activate it with:
 
 ```bash
 conda env create -f BulkRNAseq.yaml
-conda activate BulkRNAseq
+conda activate spl_mpra_map
 ```
 
 ## Step details
@@ -48,6 +50,15 @@ Downloads the raw input data the pipeline expects one directory above the workin
 
 The four `GTEx_Analysis_*.gct.gz` files are the raw matrices `1.firstfilter.py` extracts from in step 1 (`--data 0-3`); the two `Annotations_*DS.txt` files are the sample/subject metadata `1.firstfilter.py` reads to build `sample_metadata.csv.gz`.
 
+### Gene metadata generation — `make_genemetadata.per_gencodev.py`
+Builds the gene annotation/metadata file consumed downstream as `gene_names_to_id.{gv}.csv.gz` (e.g. `gene_names_to_id.26.csv.gz` for this pipeline, since it runs on GENCODE v26). Selected via `-gv`, which supports several GENCODE releases (19, 24, 26, 28, 35, 45, 49), a few Ensembl GFF3/GTF releases (v93, v100, v75) for datasets mapped to older builds, and two single-cell `.h5ad` sources (`scGTEX`, `sccovid_multiomics`).
+
+For a standard GENCODE version (as used here, `-gv 26`), it:
+1. Parses the GFF3 annotation, keeps protein-coding genes on non-sex/mito chromosomes, and computes exon count and gene length per gene
+2. Looks up housekeeping genes (from a local `housekeeping_genes.txt` RefSeq list) and ribosomal-protein genes (from the GO Cellular Component 2025 gene set) via Biomart (`gseapy.Biomart`), and flags each gene as `HK`, `RP`, `HK_RP_intersect`, `HK_only`, or `RP_only`
+
+These housekeeping/ribosomal-protein flags are what `5.calculate_transcriptome_div.py`'s `--gf` gene groupings (`RP`, `HK-RP`, etc.) are based on. Run this once to produce the `gene_names_to_id.26.csv.gz` file `1.firstfilter.py` reads before starting the numbered pipeline.
+
 ### 1. Sample & gene filtering — `1.firstfilter.py`
 Run as a job array (`--array=0-3`), where the array index selects which raw matrix to extract:
 - `0`: gene read counts
@@ -55,22 +66,18 @@ Run as a job array (`--array=0-3`), where the array index selects which raw matr
 - `2`: transcript read counts
 - `3`: transcript TPM
 
-On first run it also builds and caches `sample_metadata.csv.gz` and `gene_metadata.csv.gz` (filtering samples by death type (1 and 2), RNA quality (RIN ≥ 6), and tissue group size, and filtering genes to protein-coding, non-sex, non-mitochondrial genes present in all four raw matrices).
-
-Outputs for this step are found at `outputdir.1/`.
+On first run it also builds and caches `sample_metadata.csv.gz` and `gene_metadata.csv.gz` (filtering samples by death type, RNA quality (RIN ≥ 6), and tissue group size, and filtering genes to protein-coding, non-sex, non-mitochondrial genes present in all four raw matrices).
 
 ### 2. Per-gene diversity calculation — `2.calculate_div.py`
-Run as a large job array for each gene index, loads only that gene's row from the transcript-level matrix and computes:
-- `div1`: isoform diversity (from `div.py`)
+Run as a large job array (default `--array=0-10000`, doubled up via an offset trick to cover the full gene list in one array). For each gene index, loads only that gene's row from the transcript-level matrix and computes:
+- `div1`: isoform diversity (Shannon evenness-based index from `div.py`)
 - `total_expression`: summed expression across isoforms
 - `nisoforms_expressed`: count of isoforms with non-zero expression
 
 Results are appended gene-by-gene into shared CSVs in `outputdir.2/`.
 
 ### 3. Gene filtering — `3.genefilter.py`
-Submitted once per dataframe that needs filtering (TPM, gene metadata, diversity, isoform count, total expression). Keeps only genes with non-zero diversity in more than 1% of samples, reducing the gene set for downstream, more expensive steps.  
-Outputs for this step are found at `outputdir.3/`.
-
+Submitted once per dataframe that needs filtering (TPM, gene metadata, diversity, isoform count, total expression). Keeps only genes with non-zero diversity in more than 1% of samples, reducing the gene set for downstream, more expensive steps.
 
 ### 4. Covariate correction — `4.correct_data.py`
 Run as a job array (`--array=0-1`, mapped to `lgtype` 1 or 2) that in turn launches further `sbatch` jobs covering:
@@ -80,17 +87,22 @@ Run as a job array (`--array=0-1`, mapped to `lgtype` 1 or 2) that in turn launc
 
 Uses `scikit-learn`'s `LinearRegression` per gene against a design matrix of batch, RIN, ischemic time, and (for `lgtype=1`) age/sex/death type. Outputs residual and predicted matrices.
 
-Outputs for this step are found at `outputdir.4/`.
-
 ### 5. Transcriptome-wide diversity — `5.calculate_transcriptome_div.py`
 Run as a job array (`--array=0-6`), where each index selects a gene grouping (all genes, ribosomal protein genes, housekeeping genes, combinations/exclusions thereof). For each grouping, computes per-sample summary statistics — number of genes expressed, mean isoform diversity, mean TPM — overall and restricted to the top 1/5/10 percent most highly expressed genes.
-
-Outputs for this step are found at `outputdir.5/`.
 
 ### 6. Quantile normalization — `6.quantile_norm.py`
 Quantile-normalizes each batch-corrected residual matrix produced in step 4 (sample-group + tissue-specific residuals for TPM and diversity), so that each sample's value distribution matches a common reference distribution.
 
-Outputs for this step are found at `outputdir.6/`.
+## `demo.ipynb`
+
+A standalone, self-contained notebook (independent of the SLURM pipeline scripts) that walks through the `DIV` diversity metric on both simulated and real GTEx-derived data:
+
+- **Simulated data** — builds a small synthetic isoform-expression table and computes `DIV_1` on it as a sanity check/illustration of the metric.
+- **Biological data** — uses small demo subsets (first 10 samples) cut from the pipeline's real outputs (`outputdir.1/readtpm_t.csv.gz` for isoform-level TPM and `outputdir.5/other_and_HK-RP/tpm.csv.gz` for transcriptome-level TPM), with the exact `zcat`/`cut` commands used to generate them documented in the notebook.
+- **Isoform diversity** — computes per-gene isoform diversity (`I_DIV`) and visualizes, for an example sample, the isoform expression levels and relative abundances underlying the diversity score.
+- **Transcriptome diversity** — computes per-sample transcriptome-wide diversity (`T_DIV`) and plots, per sample, gene expression percentile vs. min-max-scaled transcriptome diversity.
+
+It's meant as a lightweight, visual introduction to how the `DIV` metric (also used throughout the numbered pipeline scripts) behaves, rather than as part of the production pipeline itself.
 
 ## Directory structure produced
 
@@ -103,14 +115,3 @@ outputdir.4/         # covariate-corrected (residual/predicted) matrices
 outputdir.5/         # transcriptome-wide per-sample summary statistics
 outputdir.6/         # quantile-normalized corrected matrices
 ```
-
-
-# Demo (demo folder) 
-A standalone, self-contained notebook (independent of the SLURM pipeline scripts) that walks through the DIV diversity metric on both simulated and real GTEx-derived data:
-- Simulated data — builds a small synthetic isoform-expression table and computes DIV_1 on it as a sanity check/illustration of the metric.
-- Biological data — uses small demo subsets (first 10 samples) cut from the pipeline's real outputs (outputdir.1/readtpm_t.csv.gz for isoform-level TPM and outputdir.5/other_and_HK-RP/tpm.csv.gz for transcriptome-level TPM), with the exact zcat/cut commands used to generate them documented in the notebook.
-1. **Isoform diversity** — computes per-gene isoform diversity (I_DIV) and visualizes, for an example sample, the isoform expression levels and relative abundances underlying the diversity score.
-2. **Transcriptome diversity** — computes per-sample transcriptome-wide diversity (T_DIV) and plots, per sample, gene expression percentile vs. min-max-scaled transcriptome diversity.
-It's meant as a lightweight, visual introduction to how the DIV metric (also used throughout the numbered pipeline scripts) behaves, rather than as part of the production pipeline itself.
-
-**Expected output:** isoform and transcriptome diversity scores, visually described based on inform and gene expression respectively.
