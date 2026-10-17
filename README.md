@@ -1,22 +1,20 @@
 # Transcriptome and isoform diversity in GTEx
 
-Code for the analyses and figures of the paper **Isoform diversity as an independent dimension of gene expression**.
+Code for the analyses and figures of the paper:
+**Isoform diversity as an independent dimension of gene expression**.
 
-## The idea
+## Abstract
 
-A gene can be expressed as one dominant isoform or as many isoforms at similar levels.
-We measure this with **isoform diversity (I-DIV)**: for one gene in one sample, the Shannon evenness
-of its isoform TPM values (natural log, normalised by the log of the number of annotated isoforms),
-after adding 1% of the gene's total TPM spread evenly over its isoforms. I-DIV is 0 when at most one
-isoform is expressed and approaches 1 when all isoforms are expressed equally.
+Isoforms of the same gene can differ in function, and their relative abundance varies between tissues and conditions.   
+Here we show, using an adaptation of Shannon evenness, that **isoform diversity (I-DIV)** is largely independent of gene expression levels and whole transcriptome diversity. 
 
-Applying the same index to the gene-level TPM vector of a whole sample gives **transcriptome diversity
-(T-DIV)**; T-DIV is computed over the non-ribosomal genes. The mean I-DIV of a sample over all genes is **µ I-DIV**. The function is `DIV()` in
+Applying the same index to the gene-level TPM vector of a whole sample gives **transcriptome diversity (T-DIV)**.  
+The function is `DIV()` in
 [`div.py`](div.py).
 
-We compute I-DIV, T-DIV and µ I-DIV for 15,834 protein-coding genes in 4,814 GTEx v8 samples from 267
+<!-- We compute I-DIV, T-DIV and µ I-DIV for 15,834 protein-coding genes in 4,814 GTEx v8 samples from 267
 donors (47 detailed tissues, SMTSD; 25 tissues, SMTS; samples filtered for death class 1–2, RIN ≥ 6 and
-tissues with ≥ 15 samples) and ask how isoform diversity relates to
+tissues with ≥ 15 samples) and ask how isoform diversity relates to:
 
 - gene expression and the number of expressed isoforms (Fig. 1),
 - differences between tissues: limma differential and equivalence tests per tissue pair (Fig. 2),
@@ -24,7 +22,7 @@ tissues with ≥ 15 samples) and ask how isoform diversity relates to
 - donor age: Spearman correlation, limma regression per tissue and mixed models across tissues (Fig. 4),
 
 and validate the approach in a neuronal differentiation time course with matched RNA-seq and proteomics
-(Ulicevic et al. 2024) (Fig. 5).
+(Ulicevic et al. 2024) (Fig. 5). -->
 
 ## Repository layout and the order to run it
 
@@ -79,7 +77,7 @@ conda activate BulkRNAseq
 #   install.packages("BiocManager"); BiocManager::install("limma")
 ```
 
-Creating the conda environment usually takes 5–20 minutes, depending on the network (not timed).
+Creating the conda environment usually takes 5–20 minutes, depending on the network.
 
 ## Demo
 
@@ -119,12 +117,12 @@ The repository includes three small files: the fixed list of ribosome-related ge
 | Compiled standalone software / installation guide  | not applicable (scripts); see Installation         |
 | System requirements, dependencies with versions    | System requirements, `BulkRNAseq.yaml`, `R_requirements.txt` |
 | Tested on                                          | RHEL 9.1, Python 3.12.2, R 4.3.3                   |
-| Typical install time                               | Dependency installation: 5 minutes ; Experiment run: 2 days | 
+| Typical install time                               | Dependency installation: 5-20 minutes ; Experiment run: 2 days | 
 | Hardware                                           | Intel(R) Xeon(R) Gold 6240R CPU @ 2.40GHz , 32 GB RAM | 
 | Demo: data, instructions, expected output, run time | `demo/`, `demo/README.md`                         |
 | Instructions for use on the paper's data           | Instructions for use and the README of each folder |
 | Open-source license                                | MIT, [`LICENSE`](LICENSE)                          |
-<!-- | Repository with a persistent identifier            | *[ADD: Zenodo DOI of the release used in the paper]* | -->
+| Repository with a persistent identifier            | [![DOI](https://zenodo.org/badge/1321554142.svg)](https://doi.org/10.5281/zenodo.23439950) |
 
 ## Citation
 <!-- 
