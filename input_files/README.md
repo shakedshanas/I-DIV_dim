@@ -36,9 +36,6 @@ age as 10-year brackets, which is what the pipeline uses.
   Supplementary Data 4–17 of Donovan et al. 2020, *Nat Commun* 11:955
   (https://www.nature.com/articles/s41467-020-14561-0), shared under CC BY 4.0. Used by
   `GTEx_upstream/5.calculate_transcriptome_div.py` and `downstream/transcriptome_div.ipynb`.
-
-## File to add by hand
-
 - `mele2015.AgeDiffExpGenes.S12.csv`: Table S12 of Melé et al. 2015, *Science* 348:660
   (age-associated genes), saved as CSV. Used only by `downstream/lme.ipynb` for the comparison with
-  published age effects. *[ADD: how the CSV was made from the supplementary file: sheet, columns kept.]*
+  published age effects. 
