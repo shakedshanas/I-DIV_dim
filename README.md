@@ -111,7 +111,7 @@ The repository includes three small files: the fixed list of ribosome-related ge
 (`input_files/ribosomal_genes.csv`), the cell-composition estimates of Donovan et al. 2020
 (`input_files/Donovan2020/`, CC BY 4.0), and the tissue colour palettes (`downstream/palettes.json`).
 
-## Nature Research code and software submission checklist
+## Code and software General Details
 
 | Checklist item                                     | Where                                              |
 |----------------------------------------------------|----------------------------------------------------|
@@ -119,7 +119,8 @@ The repository includes three small files: the fixed list of ribosome-related ge
 | Compiled standalone software / installation guide  | not applicable (scripts); see Installation         |
 | System requirements, dependencies with versions    | System requirements, `BulkRNAseq.yaml`, `R_requirements.txt` |
 | Tested on                                          | RHEL 9.1, Python 3.12.2, R 4.3.3                   |
-| Typical install time                               | Installation                                       |
+| Typical install time                               | Dependency installation: 5 minutes ; Experiment run: 2 days | 
+| Hardware                                           | Intel(R) Xeon(R) Gold 6240R CPU @ 2.40GHz , 32 GB RAM | 
 | Demo: data, instructions, expected output, run time | `demo/`, `demo/README.md`                         |
 | Instructions for use on the paper's data           | Instructions for use and the README of each folder |
 | Open-source license                                | MIT, [`LICENSE`](LICENSE)                          |
