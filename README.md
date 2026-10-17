@@ -70,8 +70,8 @@ Steps 2 → 3 → 5 must run in this order. Step 4 only needs step 1 and can run
 ## Installation
 
 ```bash
-git clone https://github.com/shakedshanas/transcriptome_and_isoform_diversity_GTEx.git
-cd transcriptome_and_isoform_diversity_GTEx
+git clone https://github.com/shakedshanas/I-DIV_dim.git
+cd I-DIV_dim
 conda env create -f BulkRNAseq.yaml
 conda activate BulkRNAseq
 # R packages, inside R 4.3.3:
