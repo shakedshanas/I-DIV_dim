@@ -1,0 +1,22 @@
+# Code-only repository: ignore everything, then allow the file types below.
+*
+!*/
+!*.py
+!*.R
+!*.sh
+!*.ipynb
+!*.md
+!.gitignore
+!LICENSE
+!environment.yml
+!R_requirements.txt
+
+# small data files that are part of the repository
+!demo/*.csv
+!input_files/ribosomal_genes.csv
+!input_files/Donovan2020/*_ESM.csv
+!input_files/Donovan2020/about.txt
+!downstream/palettes.json
+
+__pycache__/
+.ipynb_checkpoints/

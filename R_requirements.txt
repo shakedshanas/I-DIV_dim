@@ -1,0 +1,11 @@
+# R packages used by the R scripts (R 4.3.3).
+# Install with:
+#   install.packages(c("data.table", "nlme", "optparse", "R.utils"), repos = "https://cloud.r-project.org")
+#   install.packages("BiocManager"); BiocManager::install("limma")
+# (R.utils lets data.table::fread read .csv.gz files.)
+R        4.3.3
+limma    3.58.1
+nlme     3.1.171
+data.table 1.18.6.1
+optparse 1.8.2
+R.utils  2.13.0
