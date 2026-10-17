@@ -1,7 +1,7 @@
 # demo: isoform and transcriptome diversity on a small example
 
 A self-contained example of the diversity index of the paper. It needs only the Python environment of
-`../environment.yml` (numpy, pandas, matplotlib, seaborn, scikit-learn, jupyter) and the two CSV files in
+`../BulkRNAseq.yaml` (numpy, pandas, matplotlib, seaborn, scikit-learn, jupyter) and the two CSV files in
 this folder; `DIV()` is defined inside the notebook, identical to `../div.py`.
 
 ## Data

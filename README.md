@@ -1,6 +1,6 @@
 # Transcriptome and isoform diversity in GTEx
 
-Code for the analyses and figures of the paper *[ADD: title, authors, journal, year, DOI]*.
+Code for the analyses and figures of the paper **Isoform diversity as an independent dimension of gene expression**.
 
 ## The idea
 
@@ -63,7 +63,7 @@ Steps 2 → 3 → 5 must run in this order. Step 4 only needs step 1 and can run
   the quantile-normalisation tasks request 10 GB (`--mem=10G`). Memory use was not measured.
   The demo runs on a laptop.
 - **Software:**
-  - Python 3.12.2 with the packages and versions in [`environment.yml`](environment.yml)
+  - Python 3.12.2 with the packages and versions in [`BulkRNAseq.yaml`](BulkRNAseq.yaml)
   - R 4.3.3 with limma 3.58.1, nlme 3.1.171, data.table 1.18.6.1, optparse 1.8.2, R.utils 2.13.0
     ([`R_requirements.txt`](R_requirements.txt))
 
@@ -72,8 +72,8 @@ Steps 2 → 3 → 5 must run in this order. Step 4 only needs step 1 and can run
 ```bash
 git clone https://github.com/shakedshanas/transcriptome_and_isoform_diversity_GTEx.git
 cd transcriptome_and_isoform_diversity_GTEx
-conda env create -f environment.yml
-conda activate isoform_div
+conda env create -f BulkRNAseq.yaml
+conda activate BulkRNAseq
 # R packages, inside R 4.3.3:
 #   install.packages(c("data.table", "nlme", "optparse", "R.utils"))
 #   install.packages("BiocManager"); BiocManager::install("limma")
@@ -117,17 +117,17 @@ The repository includes three small files: the fixed list of ribosome-related ge
 |----------------------------------------------------|----------------------------------------------------|
 | Source code                                        | this repository                                    |
 | Compiled standalone software / installation guide  | not applicable (scripts); see Installation         |
-| System requirements, dependencies with versions    | System requirements, `environment.yml`, `R_requirements.txt` |
+| System requirements, dependencies with versions    | System requirements, `BulkRNAseq.yaml`, `R_requirements.txt` |
 | Tested on                                          | RHEL 9.1, Python 3.12.2, R 4.3.3                   |
 | Typical install time                               | Installation                                       |
 | Demo: data, instructions, expected output, run time | `demo/`, `demo/README.md`                         |
 | Instructions for use on the paper's data           | Instructions for use and the README of each folder |
 | Open-source license                                | MIT, [`LICENSE`](LICENSE)                          |
-| Repository with a persistent identifier            | *[ADD: Zenodo DOI of the release used in the paper]* |
+<!-- | Repository with a persistent identifier            | *[ADD: Zenodo DOI of the release used in the paper]* | -->
 
 ## Citation
-
-*[ADD: citation of the paper.]*
+<!-- 
+*[ADD: citation of the paper.]* -->
 
 Data and methods used: GTEx Consortium (2020) *Science* 369:1318; Donovan et al. (2020)
 *Nat Commun* 11:955; Melé et al. (2015) *Science* 348:660; Ulicevic et al. (2024), PMID 38755290.

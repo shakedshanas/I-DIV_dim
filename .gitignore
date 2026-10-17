@@ -8,7 +8,7 @@
 !*.md
 !.gitignore
 !LICENSE
-!environment.yml
+!BulkRNAseq.yaml
 !R_requirements.txt
 
 # small data files that are part of the repository
