@@ -6,7 +6,6 @@
 !*.sh
 !*.ipynb
 !*.md
-# !.gitignore
 !LICENSE
 !BulkRNAseq.yaml
 !R_requirements.txt
@@ -19,5 +18,6 @@
 !input_files/Donovan2020/mele2015.AgeDiffExpGenes.S12.csv
 !downstream/palettes.json
 
+.gitignore
 __pycache__/
 .ipynb_checkpoints/
