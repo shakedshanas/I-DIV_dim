@@ -6,7 +6,7 @@
 !*.sh
 !*.ipynb
 !*.md
-!.gitignore
+# !.gitignore
 !LICENSE
 !BulkRNAseq.yaml
 !R_requirements.txt
@@ -16,6 +16,7 @@
 !input_files/ribosomal_genes.csv
 !input_files/Donovan2020/*_ESM.csv
 !input_files/Donovan2020/about.txt
+!input_files/Donovan2020/mele2015.AgeDiffExpGenes.S12.csv
 !downstream/palettes.json
 
 __pycache__/

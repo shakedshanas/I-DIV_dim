@@ -18,7 +18,7 @@ cd demo
 jupyter nbconvert --to notebook --execute demo.ipynb --output demo.executed.ipynb
 ```
 
-or open `demo.ipynb` in Jupyter and *Run All*. Run time: 41 seconds on a login node of our cluster.
+or open `demo.ipynb` in Jupyter and *Run All*. Run time: 41 seconds on a login node of our cluster, 2 minutes on local computer.
 
 ## Expected output
 
